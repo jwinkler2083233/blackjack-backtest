@@ -22,6 +22,8 @@ namespace BlackjackBacktest
         public Dealer(StatisticsMgr stats)
         {
             Statistics = stats;
+            _shoe = new List<Card>();
+
             InitializeDeck();
             Extensions.Shuffle(_shoe);
         }
@@ -29,7 +31,9 @@ namespace BlackjackBacktest
         public void InitializeDeck()
         {
             // initialize the deck
-            _shoe = new List<Card>();
+            _shoe.Clear();
+
+            System.GC.Collect();
 
             // using a 6 deck shoe
             for (int i = 0; i < 6; i++)

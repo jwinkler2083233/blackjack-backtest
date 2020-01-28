@@ -278,12 +278,11 @@ namespace BlackjackBacktest
                     {
                         //  blackjack pays 3 to 2
                         stats.Profit += (int)(1.5 * playerHand.Bet);
-                        stats.RecordWin();
+                        stats.RecordWin(iterations);
                         if(playerHand.IsSplit)
                         {
                             stats.WinsBySplit++;
                         }
-                        stats.WinSequences.Add(iterations);
                     } else if(!playerHand.IsBlackJack && dlr.DealerHand.IsBlackJack)
                     {
                         stats.Profit -= playerHand.Bet;
@@ -300,7 +299,7 @@ namespace BlackjackBacktest
                     else if (dlr.DealerHand.IsBust)
                     {
                         stats.Profit += playerHand.Bet;
-                        stats.RecordWin();
+                        stats.RecordWin(iterations);
                         stats.WinsByBust++;
                         if (playerHand.IsDoubledDown)
                         {
@@ -310,12 +309,11 @@ namespace BlackjackBacktest
                         {
                             stats.WinsBySplit++;
                         }
-                        stats.WinSequences.Add(iterations);
                     }
                     else if (playerHand.SumCards > dlr.DealerHand.SumCards)
                     {
                         stats.Profit += playerHand.Bet;
-                        stats.RecordWin();
+                        stats.RecordWin(iterations);
                         if (playerHand.IsDoubledDown)
                         {
                             stats.WinsByDoubleDown++;
@@ -324,7 +322,6 @@ namespace BlackjackBacktest
                         {
                             stats.WinsBySplit++;
                         }
-                        stats.WinSequences.Add(iterations);
                     }
                     else if (dlr.DealerHand.SumCards > playerHand.SumCards)
                     {

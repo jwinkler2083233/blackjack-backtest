@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace BlackjackBacktest
 {
@@ -43,6 +44,18 @@ namespace BlackjackBacktest
         public Dictionary<int, int> TensAtWins;
         public Dictionary<int, int> TensAtLosses;
 
+        public class FeaturesContainer
+        {
+            public bool HasCalculateWinSequenceLengths;
+            public bool HasTrackLastFewCards;
+            public FeaturesContainer()
+            {
+                HasCalculateWinSequenceLengths = true;
+                HasTrackLastFewCards = true;
+            }
+        }
+
+        public FeaturesContainer Features;
         public StatisticsMgr()
         {
             WinStreak = 0;
@@ -53,14 +66,24 @@ namespace BlackjackBacktest
             MapSequences = new Dictionary<int, int>();
             TensAtWins = new Dictionary<int, int>();
             TensAtLosses = new Dictionary<int, int>();
+
+            Features = new FeaturesContainer();
         }
 
-        public void RecordWin()
+        public void RecordWin(int iterations)
         {
-            StampTensAtWins();
+            if (Features.HasTrackLastFewCards)
+            {
+                StampTensAtWins();
+            }
             Wins++;
             LosingStreak = 0;
             WinStreak++;
+
+            if (Features.HasCalculateWinSequenceLengths)
+            {
+                WinSequences.Add(iterations);
+            }
         }
 
         // record what the tens index is at the time of a loss
@@ -68,7 +91,10 @@ namespace BlackjackBacktest
         {
             WinStreak = 0;
             LosingStreak++;
-            StampTensAtLosses();
+            if (Features.HasTrackLastFewCards)
+            {
+                StampTensAtLosses();
+            }
             Losses++;
         }
 
@@ -96,7 +122,51 @@ namespace BlackjackBacktest
                 TensAtLosses[TensIndex] = curval+1;
             }
         }
-        public void CalculateWinningSequences()
+
+        public void CalculateDerivedStatistics()
+        {
+            if(Features.HasCalculateWinSequenceLengths)
+            {
+                CalculateWinningSequences();
+            }
+        }
+
+        public void ReportStatistics()
+        {
+            if (Features.HasCalculateWinSequenceLengths)
+            {
+                foreach (var pair in MapSequences)
+                {
+                    Debug.WriteLine("  Sequence:  {0}    Count:  {1}", pair.Key, pair.Value);
+                }
+            }
+
+            if (Features.HasTrackLastFewCards)
+            {
+                Debug.WriteLine("\n\nTensIndex at Win Time:");
+                foreach (var pair in TensAtWins)
+                {
+                    Debug.WriteLine("  Tens: {0}    Count:  {1}", pair.Key, pair.Value);
+                }
+
+                Debug.WriteLine("\n\nTensIndex at Loss Time:");
+                foreach (var pair in TensAtLosses)
+                {
+                    Debug.WriteLine("  Tens: {0}    Count:  {1}", pair.Key, pair.Value);
+                }
+            }
+
+            Debug.WriteLine("\nWins: {0}    Losses: {1}  \n" +
+                "Wins By Bust: {2}  Losses By Bust: {10}\n" +
+                "Wins By DoubleDown: {3}  Losses By DoubleDown: {4}  \n" +
+                "BlackJacks:  {5}   Wins By Split: {8} Losses by Split: {9}\n" +
+                "Profit  %: {6}   \n" +
+                "Cumulative Bets: {7}  \n\n" ,
+                Wins, Losses, WinsByBust, WinsByDoubleDown,
+                LossesByDoubleDown, BlackJacks, 100 * ((float)Profit / (float)CumulativeBet),
+                CumulativeBet, WinsBySplit, LossesBySplit, LossesByBust);
+        }
+        protected void CalculateWinningSequences()
         {
             int priorWinSequence = 0;
             int sequenceCount = 0;
