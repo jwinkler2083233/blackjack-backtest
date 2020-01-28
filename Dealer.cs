@@ -7,6 +7,7 @@ namespace BlackjackBacktest
     public class Dealer
     {
         protected List<Card> _shoe;
+        protected Card[] _nextshoe;
 
         public HouseHand DealerHand;
 
@@ -24,18 +25,6 @@ namespace BlackjackBacktest
             Statistics = stats;
             _shoe = new List<Card>();
 
-            InitializeDeck();
-            Extensions.Shuffle(_shoe);
-        }
-
-        public void InitializeDeck()
-        {
-            // initialize the deck
-            _shoe.Clear();
-
-            System.GC.Collect();
-
-            // using a 6 deck shoe
             for (int i = 0; i < 6; i++)
             {
                 for (byte x = 1; x < 14; x++)
@@ -46,6 +35,18 @@ namespace BlackjackBacktest
                     _shoe.Add(new Card(3, x));
                 }
             }
+
+            _nextshoe = _shoe.ToArray();
+            Extensions.Shuffle(_shoe);
+        }
+
+        public void InitializeDeck()
+        {
+            // initialize the deck
+            _shoe.Clear();
+
+            // fill the list for the shuffle, using the original card objects
+            _shoe.AddRange(_nextshoe);
         }
 
         public void Shuffle()
@@ -54,6 +55,7 @@ namespace BlackjackBacktest
             Extensions.Shuffle(_shoe);
         }
 
+        // deal a card from the shoe to the hand
         public Card DealCard(Hand hand)
         {
             hand.AddCardShowing(_shoe[0]);
