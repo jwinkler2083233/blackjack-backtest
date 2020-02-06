@@ -9,7 +9,7 @@ The latest revision has support for:
 * a formula to determine when to doubledown -- it currently tests at a 3-2 win ratio
 * a formula to determine when to split -- it currently tests at a 8-7 win ratio
 
-Some other assumptions in this testing framework:  I'm using a pseudo-random generator to shuffle the cards, so the card distribution is very randomized.  When there is less than 52 cards remaining in the shoe, the cards are re-shuffled.
+Some other assumptions in this testing framework:  I'm using a pseudo-random generator to shuffle the cards, so the card distribution is very randomized.  When there are less than 52 cards remaining in the shoe, the cards are re-shuffled.
 
 A few interesting observations:
 
