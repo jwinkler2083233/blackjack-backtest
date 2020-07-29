@@ -1,5 +1,4 @@
 # blackjack-backtest
-This is a testing framework for blackjack systems.
 
 This is for entertainment purposes only.  It shows a system I've developed for betting on blackjack.  The results were initially really bad, with a 25% loss ratio.  Over time, and with lots of small improvements, the latest revision has a positive profit ratio of about 1.3%.  I tested it with several million hands per test.  The house win ratio is about 52% now, but the profit ratio has steadily improved with changes to betting on splits and doubledowns.
 
